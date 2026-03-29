@@ -22,5 +22,18 @@ async function getClass(player){
 }
 
 
+async function getOnline(){
+    try {
+        const res = await fetchIRE('characters.json')
+       
+        const ret = {characters: res.characters.map(p=>p.name), count: res.count}
+    
+        return ret
+    } catch (err) {
+        console.log(err)
+    }
+}
 
-export {fetchIRE, getClass}
+
+
+export {fetchIRE, getClass, getOnline}

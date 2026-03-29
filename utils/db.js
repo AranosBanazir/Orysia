@@ -1,6 +1,6 @@
 import { supabase } from "../server.js";
-import { fetchIRE, getClass } from "./IRE.js";
-import {cap} from './index.js'
+import { fetchIRE, getClass, getOnline, cap} from "./index.js";
+
 
 //Did today
     //Added db fetch requests and formatting for kills by class
@@ -8,20 +8,27 @@ import {cap} from './index.js'
 
 //TODO
     //set up KDR to show seperate from requesting a class
-    
 
 
 
-async function updatePlayerInfo(who){
-        console.log('who', who)
-        const player = await fetchIRE(`characters/${who}.json`)
-        console.log('update', player)
-        const {error} = await supabase.from('Players')
-                                .update(player)
-                                .eq('name', player.name)
+//TODO this does not work, will need to update first and if the return is not a player, insert
+async function updatePlayerInfo(who, kdr){
+        let player = await fetchIRE(`characters/${who}.json`)
+         
+        if (kdr){
+            player = {kdr:kdr, ...player}
+        }
 
+
+
+        const {error, data} = await supabase.from('Players')
+                                .upsert(player)
+                                .select()
+                              
+                                
+                        
         if (!error){
-            return player
+        }else{
         }
     }
 
@@ -102,7 +109,16 @@ async function playerKillStats(player, killerClass){
     }
 }
 
+// updatePlayerInfo('Puxi', 2)
+//populate DB from Game Information
+async function updatePlayerDB(){
+    const players = await getOnline()
 
+    for (const player of players.characters){
+        await updatePlayerInfo(player)
+    }
+    console.log('Finished updating Database.')
+}
 
-
+updatePlayerInfo('Aesa')
 export {playerKillStats, newDeathLog, updatePlayerInfo}
