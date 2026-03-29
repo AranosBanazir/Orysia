@@ -1,13 +1,14 @@
 import { supabase } from "../server.js";
 import { fetchIRE, getClass } from "./IRE.js";
+import {cap} from './index.js'
+
+//Did today
+    //Added db fetch requests and formatting for kills by class
+    //set up the structure of the DB
 
 //TODO
-// Update kills
-// return QWC formatted
-// specific queries 
-    //get online by city and format
-    //KDR to show a formatted display of who has been killed by that person
-        //reference this by the death_log table
+    //set up KDR to show seperate from requesting a class
+    
 
 
 
@@ -45,22 +46,63 @@ try{
 }
 
 
-async function playerKillStats(player){
-    const result = await supabase.from('death_logs').select().eq('killer', player)
-    const kills = result.data
-    let format = []
+async function playerKillStats(player, killerClass){
+    let result = await supabase.from('death_logs').select().eq('killer', player).eq('killer_class', killerClass)
 
-    
-    kills.forEach((kill)=>{
+    const kills = result.data
+    let display = ``
+
+        const format = {}
+
         
-    })
-    
+
+       kills.forEach(({ killer, killed, killer_class, killed_class }) => {
+        if (!format[killer]) format[killer] = {};
+
+        if (!format[killer][killer_class]) {
+            format[killer][killer_class] = {};
+        }
+
+        const victimKey = `${killed}|${killed_class}`;
+
+        if (!format[killer][killer_class][victimKey]) {
+            format[killer][killer_class][victimKey] = {
+            killed,
+            killed_class,
+            count: 0
+            };
+        }
+
+        format[killer][killer_class][victimKey].count++;
+        });
+
+   
+
+//formats based on the kills
+
+  Object.entries(format).forEach(([killer, classes]) => {
+  display = display + `Recorded kills for ${cap(killer)} in: `;
+
+  Object.entries(classes).forEach(([killerClass, victims]) => {
+        display = display + `${cap(killerClass)}\n`
+    Object.values(victims).forEach(v => {
+      display = display + (
+        `${cap(v.killed)} (${cap(v.killed_class)}) x${v.count}`+'\n'
+      );
+    });
+  });
+});
+
+    if (kills.length === 0 && killerClass == undefined){
+        return `You must include a class to get the stats for ${cap(player)}. Try: !kdr ${cap(player)} <class>`
+    }else if (kills.length === 0 && killerClass != undefined){
+        return `No kills found for ${cap(player)} in ${cap(killerClass)}`
+    }else{
+        return display
+    }
 }
 
-// newDeathLog('Aranos', 'Puxi')
-// newDeathLog('Aranos', 'Puxi')
-// newDeathLog('Aranos', 'Puxi')
-// newDeathLog('Aranos', 'Claes')
-// newDeathLog('Aranos', 'Tabethys')
+
+
 
 export {playerKillStats, newDeathLog, updatePlayerInfo}
