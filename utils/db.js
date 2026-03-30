@@ -136,6 +136,10 @@ async function getKDR(who){
     let num = kills.count / deaths.count
     let ratio = parseFloat(num.toFixed(1))
 
+    if (deaths.count == 0){
+        ratio = kills.count
+    }
+
     return {k: kills.count, d: deaths.count, kdr: ratio}
 
 }

@@ -57,9 +57,11 @@ async function getGameFeed(){
     
 async function getPlayer(who){
     const player = await fetchIRE(`characters/${who}.json`)
+     if(player.error.message) return 'No character found by the name ' + who
     const buffer = player.fullname.length
     let bufferDisplay = ''
-
+    
+   
 
     let infoDisplay = `City: ${cap(player.city)}
 House: ${cap(player.house)}     Class: ${cap(player.class)}
@@ -78,7 +80,7 @@ Mobs : ${player.mob_kills} Kills: ${player.player_kills}
 }
 
 
-
+getPlayer('Alynzar')
 
 async function getNews(category, postNum, msg){
 
