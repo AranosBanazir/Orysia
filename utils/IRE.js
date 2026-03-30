@@ -56,8 +56,10 @@ async function getGameFeed(){
 
     
 async function getPlayer(who){
-
-
+    
+if (who === 'Alynzar' || who === 'alynzar'){
+    who = 'Alyzar'
+}
     
     let player = await fetchIRE(`characters/${who}.json`)
 
