@@ -76,5 +76,4 @@ Level: ${player.level} (#${player.xp_rank})`
     
 }
 
-getPlayer('Aranos')
 export {fetchIRE, getClass, getOnline, getGameFeed, getPlayer}

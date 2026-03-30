@@ -1,6 +1,6 @@
 import {Client, GatewayIntentBits} from 'discord.js';
 import {createServer, port} from '../server.js';
-import { playerKillStats, getKDR, getPlayer } from '../utils/index.js';
+import { playerKillStats, getKDR, getPlayer, cap, getPlayers} from '../utils/index.js';
 
 const bot = new Client({
     intents: [
@@ -29,10 +29,8 @@ bot.on('messageCreate', async (msg)=>{
     const kdrSpecific = /^\!kdr \w+ \w+$/
     const kdr = /^\!kdr \w+$/
     const whois = /\!whois \w+$/
+    const qwc   = /\!qwc/
 
-
-
-    console.log('header', content)
     if (!msg.author.bot){
         if (kdrSpecific.test(content)){
             const who = content.split(' ')[1]
@@ -41,18 +39,23 @@ bot.on('messageCreate', async (msg)=>{
            let res = await playerKillStats(who, whoClass)
 
            msg.channel.send('```' + res + '```')
+        }else if (whois.test(content)){
+            const who = content.split(' ')[1]
+            const display = await getPlayer(who)
+            msg.channel.send('```' + display + '```')
+        }else if (kdr.test(content)){
+            const who = content.split(' ')[1]
+            const {k, d, kdr} = await getKDR(who) 
+            msg.channel.send('``' +`${cap(who)} has a KDR of ${kdr} with ${k} kills and ${d} deaths.` + '``')
+        }else if (qwc.test(content)){
+                const emoji = bot.emojis.cache.get('1485427009260753007')
+            msg.channel.send(`Updating player database...${emoji}`).then(async sentMsg=>{
+                    const msgID = sentMsg.id
+                    const data = await getPlayers()
+                    msg.channel.send('```' + data + '```').then(()=>{
+                        sentMsg.delete()
+                    })
+
+                })
         }
-
-    }else if (whois.test(content)){
-        const who = content.split(' ')[1]
-        const display = await getPlayer(who)
-
-        msg.channel.send(display)
-    }else if (kdr.test(content)){
-        const who = content.split(' ')[1]
-        console.log(who)
-       const {k, d, kdr} = await getKDR(who)
-        
-       msg.channel.send('``' +`${who} has a KDR of ${kdr} with ${k} kills and ${d} deaths.` + '``')
-    }
-})
+}})
