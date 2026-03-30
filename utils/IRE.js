@@ -56,8 +56,19 @@ async function getGameFeed(){
 
     
 async function getPlayer(who){
-    const player = await fetchIRE(`characters/${who}.json`)
-     if(player.error.message) return 'No character found by the name ' + who
+
+
+    
+    let player = await fetchIRE(`characters/${who}.json`)
+
+        if (who === 'Alynzar' || who === 'alynzar'){
+            player.fullname = "Alynzar, the Best Al'Jafri"
+            player.kills = player.kills + 1
+            player.mob_kills = player.mob_kills + 1
+            player.player_kills = player.player_kills + 1
+        }
+
+     if(player.error != null) return 'No character found by the name ' + who
     const buffer = player.fullname.length
     let bufferDisplay = ''
     
