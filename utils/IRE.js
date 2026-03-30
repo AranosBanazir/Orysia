@@ -1,5 +1,6 @@
 
 import {cap} from './index.js'
+
 async function fetchIRE(url){
         try{
             const result = await fetch(`http://api.achaea.com/${url}`)
@@ -61,9 +62,10 @@ async function getPlayer(who){
 
 
     let infoDisplay = `City: ${cap(player.city)}
-House: ${cap(player.house)}
-Class: ${cap(player.class)}
-Level: ${player.level} (#${player.xp_rank})`
+House: ${cap(player.house)}     Class: ${cap(player.class)}
+Level: ${player.level} (#${player.xp_rank})     Explorers: ${player.explorer_rank}
+Mobs : ${player.mob_kills} Kills: ${player.player_kills}
+`
 
     while (bufferDisplay.length < buffer){
         bufferDisplay = bufferDisplay + '='
@@ -71,9 +73,57 @@ Level: ${player.level} (#${player.xp_rank})`
 
 
     const display = `${player.fullname}\n` + bufferDisplay + '\n' + infoDisplay 
-    console.log(display)
     return display
     
 }
 
-export {fetchIRE, getClass, getOnline, getGameFeed, getPlayer}
+
+
+
+async function getNews(category, postNum, msg){
+
+
+
+            try{
+            const res = await fetch(`http://api.achaea.com/news/${category}/${postNum}.json`)
+            const result = await res.json()
+                
+           let postDisplay = `
+Author:  ${result.post.from}
+To:      ${result.post.to}
+Subject: ${result.post.subject}
+Date:    ${result.post.date_ingame}
+
+
+        ${result.post.message}`
+            
+
+             
+        msg.channel.send(result.post.message.length < 3000 ? '```'+ postDisplay + '```' : `https://www.achaea.com/news/${category}/${postNum}`)
+               
+              
+            } catch (err){
+                console.error(err)
+                msg.channel.send(`Sorry ${msg.author}, but either that post doesn't exist, or you can't see it.`)
+            }
+    }
+
+
+
+
+    async function pet({author, channel}){
+        let reactions = [
+            `*Orysia, an ethereal fox gracefully curls around ${author}'s legs.*`,
+            `*Orysia, an ethereal fox gives ${author} a friendly cuddle.*`,
+            `*Orysia, an ethereal fox tackles ${author} at the knees.*`,
+            `*Orysia, an ethereal fox inches bashfully over to ${author} and nuzzles you tenderly.*`,
+            `*Orysia, an ethereal fox growls softly, playfully licking at your hand.*`
+        ]
+
+        let rndReaction = reactions[Math.floor(Math.random() * reactions.length)]
+        
+        channel.send(rndReaction)
+    }
+
+
+export {fetchIRE, getClass, getOnline, getGameFeed, getPlayer, getNews, pet}

@@ -200,7 +200,7 @@ async function updateDeathLogs(){
     const feed = await getGameFeed()
     let regex = /^\w+ was slain by \w+.$/
     const events = feed.filter(e=>{
-        if (regex.test(e[1]) && e[1].split(' ')[4] != 'misadventure'){
+        if (regex.test(e[1]) && (e[1].split(' ')[4] != 'misadventure.')){
           
             return {event_id: e[0], desc:e[1]}
         }

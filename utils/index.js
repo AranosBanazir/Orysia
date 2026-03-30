@@ -1,6 +1,6 @@
 import { cap } from "./formating.js";
 import { playerKillStats, getKDR, getPlayers} from "./db.js";
-import { getOnline, fetchIRE, getClass, getGameFeed, getPlayer} from "./IRE.js";
+import { getOnline, fetchIRE, getClass, getGameFeed, getPlayer, getNews, pet} from "./IRE.js";
 
 
 
@@ -14,5 +14,7 @@ export {
     getGameFeed,
     getKDR,
     getPlayer,
-    getPlayers
+    getPlayers,
+    getNews,
+    pet
 }
