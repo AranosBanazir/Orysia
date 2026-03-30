@@ -1,4 +1,5 @@
 
+import {cap} from './index.js'
 async function fetchIRE(url){
         try{
             const result = await fetch(`http://api.achaea.com/${url}`)
@@ -34,6 +35,46 @@ async function getOnline(){
     }
 }
 
+async function getGameFeed(){
+       let feed = []
+            try{
+            const res = await fetchIRE('gamefeed.json')
+            for (const e of res){
+                if (e.type === 'DEA'){
+                    feed.push([e.id, e.description])
+                }
+            }
+
+        }catch (err){
+            console.error(err.message)
+
+        }
+
+        return feed
+}
+
+    
+async function getPlayer(who){
+    const player = await fetchIRE(`characters/${who}.json`)
+    const buffer = player.fullname.length
+    let bufferDisplay = ''
 
 
-export {fetchIRE, getClass, getOnline}
+    let infoDisplay = `City: ${cap(player.city)}
+House: ${cap(player.house)}
+Class: ${cap(player.class)}
+Level: ${player.level} (#${player.xp_rank})`
+
+    while (bufferDisplay.length < buffer){
+        bufferDisplay = bufferDisplay + '='
+    }
+
+
+    const display = `${player.fullname}\n` + bufferDisplay + '\n' + infoDisplay 
+    console.log(display)
+    return display
+    
+}
+
+getPlayer('Aranos')
+export {fetchIRE, getClass, getOnline, getGameFeed, getPlayer}

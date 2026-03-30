@@ -1,5 +1,5 @@
 import { supabase } from "../server.js";
-import { fetchIRE, getClass, getOnline, cap} from "./index.js";
+import { fetchIRE, getClass, getOnline, cap, getGameFeed} from "./index.js";
 
 
 //Did today
@@ -22,11 +22,16 @@ async function updatePlayerInfo(who, kdr){
 
 
         const {error, data} = await supabase.from('Players')
-                                .upsert(player)
+                                .update(player)
+                                .eq('name', who)
                                 .select()
                               
-                                
-                        
+            if (data.length === 0 ){
+                await supabase.from('Players')
+                              .insert(player)
+                              
+            }                 
+        
         if (!error){
         }else{
         }
@@ -54,7 +59,7 @@ try{
 
 
 async function playerKillStats(player, killerClass){
-    let result = await supabase.from('death_logs').select().eq('killer', player).eq('killer_class', killerClass)
+    let result = await supabase.from('death_logs').select().eq('killer', cap(player)).eq('killer_class', killerClass.toLowerCase())
 
     const kills = result.data
     let display = ``
@@ -100,6 +105,8 @@ async function playerKillStats(player, killerClass){
   });
 });
 
+
+
     if (kills.length === 0 && killerClass == undefined){
         return `You must include a class to get the stats for ${cap(player)}. Try: !kdr ${cap(player)} <class>`
     }else if (kills.length === 0 && killerClass != undefined){
@@ -109,7 +116,7 @@ async function playerKillStats(player, killerClass){
     }
 }
 
-// updatePlayerInfo('Puxi', 2)
+
 //populate DB from Game Information
 async function updatePlayerDB(){
     const players = await getOnline()
@@ -120,5 +127,47 @@ async function updatePlayerDB(){
     console.log('Finished updating Database.')
 }
 
-updatePlayerInfo('Aesa')
-export {playerKillStats, newDeathLog, updatePlayerInfo}
+
+
+async function getKDR(who){
+    await updateDeathLogs()
+    const kills = await supabase.from('death_logs').select('*', {count: 'exact', head: true}).eq('killer', cap(who))
+    const deaths = await supabase.from('death_logs').select('*', {count: 'exact', head: true}).eq('killed', cap(who))
+
+    console.log(kills)
+    let num = kills.count / deaths.count
+    let ratio = parseFloat(num.toFixed(1))
+
+    return {k: kills.count, d: deaths.count, kdr: ratio}
+
+}
+
+
+//TODO death Logs needs a tracked ID function to pull tracked id's to not insert uncessarily
+
+
+async function updateDeathLogs(){
+    const feed = await getGameFeed()
+    let regex = /^\w+ was slain by \w+.$/
+    const events = feed.filter(e=>{
+        if (regex.test(e[1]) && e[1].split(' ')[4] != 'misadventure'){
+            return {event_id: e[0], desc:e[1]}
+        }
+    })
+
+    let bulk = []
+    
+    for (const event of events){
+        let killer = event[1].split(' ')[4].split('.')[0]
+        let killed = event[1].split(' ')[0]
+        let killer_class = await getClass(killer)
+        let killed_class = await getClass(killed)
+
+        bulk.push({killer, killed, killer_class, killed_class, event_id:event[0]})
+    }
+
+    await supabase.from('death_logs').insert(bulk)
+}
+
+// updatePlayerDB()
+export {playerKillStats, newDeathLog, updatePlayerInfo, getKDR}
