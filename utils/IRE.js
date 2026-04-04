@@ -56,14 +56,15 @@ async function getGameFeed(){
 
     
 async function getPlayer(who){
-    
+    let alyCheck = false
 if (who === 'Alynzar' || who === 'alynzar'){
     who = 'Alyzar'
+    alyCheck = true
 }
     
     let player = await fetchIRE(`characters/${who}.json`)
 
-        if (who === 'Alynzar' || who === 'alynzar'){
+        if (alyCheck){
             player.fullname = "Alynzar, the Best Al'Jafri"
             player.kills = player.kills + 1
             player.mob_kills = player.mob_kills + 1
