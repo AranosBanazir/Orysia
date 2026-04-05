@@ -235,7 +235,86 @@ async function updateDeathLogs(){
 
 
 
+async function getPlayerKills(player){
+    let result = await supabase.from('death_logs').select().eq('killer', cap(player))
+    let kdr = await getKDR(player)
+    const kills = result.data
+    let display = ``
 
+        const format = {}
+
+        
+
+       kills.forEach(({ killer, killed, killer_class, killed_class }) => {
+        if (!format[killer]) format[killer] = {};
+
+        if (!format[killer][killer_class]) {
+            format[killer][killer_class] = {};
+        }
+
+        const victimKey = `${killed}|${killed_class}`;
+
+        if (!format[killer][killer_class][victimKey]) {
+            format[killer][killer_class][victimKey] = {
+            killed,
+            killed_class,
+            count: 0
+            };
+        }
+
+        format[killer][killer_class][victimKey].count++;
+        });
+
+   
+
+//formats based on the kills
+
+  Object.entries(format).forEach(([killer, classes]) => {
+  display = display + `${cap(killer)} had a KDR of ${kdr.kdr} with ${kdr.k} kills to ${kdr.d} deaths.\n\n`;
+
+  Object.entries(classes).forEach(([killerClass, victims]) => {
+        display = display + `${cap(killerClass)}\n`
+    Object.values(victims).forEach(v => {
+      display = display + (
+        `     ${cap(v.killed)} (${cap(v.killed_class)}) x${v.count}`+'\n'
+      );
+    });
+  });
+});
+
+   
+
+    if (kills.length === 0 ){
+       return `No kills found for ${cap(player)}`
+    }else{
+       return display
+    }
+}
+
+
+async function getGlobalClassStats(){
+    const {data} = await supabase.from('death_logs').select()
+    const classes = ["alchemist", "apostate", "bard", "blademaster", "depthswalker", "druid", "infernal", "jester", 'magi', "monk", "occultist", "paladin", "pariah", "priest", "psion", "runewarden", "sentinel", "serpent", "shaman", "sylvan", "unnamable"]
+    let classInfo = {}
+    let display = ``
+    data.forEach(e=>{
+        if (!classInfo[e.killer_class]){
+            classInfo[e.killer_class] = 1
+        }else{
+            classInfo[e.killer_class] = classInfo[e.killer_class] + 1
+        }
+    })
+
+    const sortedEntries = Object.entries(classInfo).sort((a, b) => b[1] - a[1]);
+    const sortedObj = Object.fromEntries(sortedEntries);
+
+    for (const c of Object.entries(sortedObj)){
+      if (classes.includes(c[0])){
+        display = display + `${cap(c[0])} has ${c[1]} kills\n`
+      }
+    }
+   return display
+}
 
 
     
@@ -251,6 +330,7 @@ async function updateDeathLogs(){
  
  
 updateDeathLogs()
+
  
 // updatePlayerDB()
-export {playerKillStats, newDeathLog, updatePlayerInfo, getKDR, getPlayers}
+export {playerKillStats, newDeathLog, updatePlayerInfo, getKDR, getPlayers, getPlayerKills, getGlobalClassStats}

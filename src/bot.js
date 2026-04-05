@@ -1,6 +1,6 @@
 import {Client, GatewayIntentBits} from 'discord.js';
 import {createServer, port} from '../server.js';
-import { playerKillStats, getKDR, getPlayer, cap, getPlayers, getNews, pet} from '../utils/index.js';
+import { getCommands, getGlobalClassStats, playerKillStats, getKDR, getPlayer, cap, getPlayers, getNews, pet, getPlayerKills} from '../utils/index.js';
 
 
 const bot = new Client({
@@ -31,7 +31,6 @@ bot.on('messageCreate', async (msg)=>{
     const kdrSpecific = /^\!kdr \w+ \w+$/
     const kdr = /^\!kdr \w+$/
     const whois = /\!whois \w+$/
-    const qwc   = /\!qwc/
     const news  = /^\!news (\w+) (\d+)$/
 
 
@@ -49,9 +48,9 @@ bot.on('messageCreate', async (msg)=>{
             msg.channel.send('```' + display + '```')
         }else if (kdr.test(content)){
             const who = content.split(' ')[1]
-            const {k, d, kdr} = await getKDR(who) 
-            msg.channel.send('``' +`${cap(who)} has a KDR of ${kdr} with ${k} kills and ${d} deaths.` + '``')
-        }else if (qwc.test(content)){
+            let res = await getPlayerKills(who)
+           msg.channel.send('```ruby\n' + res + '```')
+        }else if (content === '!qwc' || content === '!QWC'){
             const emoji = bot.emojis.cache.get('1485427009260753007')
             msg.channel.send(`Updating player database...${emoji}`).then(async sentMsg=>{
                     const msgID = sentMsg.id
@@ -67,5 +66,10 @@ bot.on('messageCreate', async (msg)=>{
             getNews(category, postNum, msg)
         }else if (content === '!pet'){
             pet(msg)
+        }else if (content === '!classleaderboard'){
+           msg.channel.send('```ruby\n' + await getGlobalClassStats() + '```')
+        }else if (content === '!commands'){
+            const commands = getCommands()
+            msg.channel.send('```\n' + commands + '```')
         }
 }})

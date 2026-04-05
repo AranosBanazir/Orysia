@@ -133,7 +133,7 @@ Date:    ${result.post.date_ingame}
             `*Orysia, an ethereal fox gives ${author} a friendly cuddle.*`,
             `*Orysia, an ethereal fox tackles ${author} at the knees.*`,
             `*Orysia, an ethereal fox inches bashfully over to ${author} and nuzzles you tenderly.*`,
-            `*Orysia, an ethereal fox growls softly, playfully licking at your hand.*`
+            `*Orysia, an ethereal fox growls softly, playfully licking at ${author}'s hand.*`
         ]
 
         let rndReaction = reactions[Math.floor(Math.random() * reactions.length)]

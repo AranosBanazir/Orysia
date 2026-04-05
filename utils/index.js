@@ -1,5 +1,5 @@
-import { cap } from "./formating.js";
-import { playerKillStats, getKDR, getPlayers} from "./db.js";
+import { cap, getCommands } from "./formating.js";
+import { playerKillStats, getKDR, getPlayers, getPlayerKills, getGlobalClassStats} from "./db.js";
 import { getOnline, fetchIRE, getClass, getGameFeed, getPlayer, getNews, pet} from "./IRE.js";
 
 
@@ -16,5 +16,8 @@ export {
     getPlayer,
     getPlayers,
     getNews,
-    pet
+    pet,
+    getPlayerKills,
+    getGlobalClassStats,
+    getCommands
 }
