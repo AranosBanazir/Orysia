@@ -8,6 +8,7 @@ async function fetchIRE(url){
 
             return res
         }catch(err){
+            console.log(url)
             console.error('IRE ERROR', err.message)
         }
 
@@ -41,16 +42,16 @@ async function getGameFeed(){
             try{
             const res = await fetchIRE('gamefeed.json')
             for (const e of res){
-                if (e.type === 'DEA'){
+                if (e.type === 'DEA' || e.type === 'DUE'){
                     feed.push([e.id, e.description])
                 }
             }
-
         }catch (err){
             console.error(err.message)
 
         }
 
+        
         return feed
 }
 
@@ -94,7 +95,7 @@ Mobs : ${player.mob_kills} Kills: ${player.player_kills}
 }
 
 
-getPlayer('Alynzar')
+
 
 async function getNews(category, postNum, msg){
 

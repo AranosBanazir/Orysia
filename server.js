@@ -10,10 +10,14 @@ import { WebhookClient } from "discord.js";
 
 const TargDeathBot = new WebhookClient({ id: process.env.WH_ID, token: process.env.WH_TOKEN });
 
-async function Grim(killer, killed, killer_class, killed_class){    
+async function Grim(killer, killed, killer_class, killed_class, arena){    
+        let formattedMsg
 
-
-          let  formattedMsg = `${killed} (${cap(killed_class)}) was slain by ${killer} (${cap(killer_class)})`
+        if (arena){
+            formattedMsg = `${killed} (${cap(killed_class)}) was slain by ${killer} (${cap(killer_class)}) in Oniar.`
+        }else{
+            formattedMsg = `${killed} (${cap(killed_class)}) was slain by ${killer} (${cap(killer_class)})`
+        }
         
             TargDeathBot.send({
             content: '```' + formattedMsg + '```',

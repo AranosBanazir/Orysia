@@ -202,14 +202,17 @@ Cyrene    [${cities.cyrene.length}]: ${cities.cyrene.join(', ')}`
     
 async function updateDeathLogs(){
     const feed = await getGameFeed()
-    let regex = /^\w+ was slain by \w+.$/
+    let death = /^\w+ was slain by \w+.$/
+    let duel  = /^\w+ defeated \w+ in the Oniar Estate.$/
     const events = feed.filter(e=>{
-        if (regex.test(e[1]) && (e[1].split(' ')[4] != 'misadventure.')){
+        if (death.test(e[1]) && (e[1].split(' ')[4] != 'misadventure.')){
           
+            return {event_id: e[0], desc:e[1]}
+        }else if (duel.test(e[1])){
+            
             return {event_id: e[0], desc:e[1]}
         }
     })
-
     let bulk = []
     const ids = await supabase.from('death_logs').select('event_id')
 
@@ -219,18 +222,32 @@ async function updateDeathLogs(){
     
     for (const event of events){
 
-        let killer = event[1].split(' ')[4].split('.')[0]
-        let killed = event[1].split(' ')[0]
-        let killer_class = await getClass(killer)
-        let killed_class = await getClass(killed)
+
         if (!eventIds.includes(event[0])){
-            Grim(killer, killed, killer_class, killed_class,)
-            bulk.push({killer, killed, killer_class, killed_class, event_id:event[0]})
+            if (death.test(event[1])){
+                let killer = event[1].split(' ')[4].split('.')[0]
+                let killed = event[1].split(' ')[0]
+                let killer_class = await getClass(killer)
+                let killed_class = await getClass(killed)
+                Grim(killer, killed, killer_class, killed_class, false)
+                bulk.push({killer, killed, killer_class, killed_class, event_id:event[0], arena: false})
+            }else if (duel.test(event[1])){
+                let killer = event[1].split(' ')[0]
+                let killed = event[1].split(' ')[2]
+                let killer_class = await getClass(killer)
+                let killed_class = await getClass(killed)
+                Grim(killer, killed, killer_class, killed_class, true)
+                bulk.push({killer, killed, killer_class, killed_class, event_id:event[0], arena: true})
+            }
+
         }
     }
 
-     await supabase.from('death_logs').insert(bulk).select()
+    const {data, error} = await supabase.from('death_logs').insert(bulk).select()
 
+    if (data.length > 0){
+        console.log(data)
+    }
 }
 
 
@@ -245,7 +262,7 @@ async function getPlayerKills(player){
 
         
 
-       kills.forEach(({ killer, killed, killer_class, killed_class }) => {
+       kills.forEach(({ killer, killed, killer_class, killed_class, arena }) => {
         if (!format[killer]) format[killer] = {};
 
         if (!format[killer][killer_class]) {
@@ -258,7 +275,8 @@ async function getPlayerKills(player){
             format[killer][killer_class][victimKey] = {
             killed,
             killed_class,
-            count: 0
+            count: 0,
+            arena
             };
         }
 
@@ -276,7 +294,7 @@ async function getPlayerKills(player){
         display = display + `${cap(killerClass)}\n`
     Object.values(victims).forEach(v => {
       display = display + (
-        `     ${cap(v.killed)} (${cap(v.killed_class)}) x${v.count}`+'\n'
+        `     ${cap(v.killed)} (${cap(v.killed_class)}) x${v.count} ${v.arena ? " (Oniar)":''}`+'\n'
       );
     });
   });
