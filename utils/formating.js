@@ -46,4 +46,17 @@ function getCommands(){
   return display
 }
 
-export {cap, getCommands}
+
+
+function buffer(word, spaces){
+    let i = 0
+    let diff = spaces - word.length
+    let ret = ''
+    while (i < diff){
+        ret = ret + ' '
+        i++
+    }   
+    return ret
+}
+
+export {cap, getCommands, buffer}
