@@ -245,7 +245,7 @@ async function updateDeathLogs(){
 
     const {data, error} = await supabase.from('death_logs').insert(bulk).select()
 
-    if (data.length > 0){
+    if (data?.length > 0){
         console.log(data)
     }
 }
