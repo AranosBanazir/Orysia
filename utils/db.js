@@ -214,13 +214,13 @@ async function updateDeathLogs(){
         }
     })
     let bulk = []
-    const ids = await supabase.from('death_logs').select('event_id')
+    const ids = await supabase.from('death_logs').select('id, event_id').order('id', {ascending: false}).limit(25)
+
+
 
     let eventIds = ids.data.map(e=>{
         return e.event_id
     })
-    
-    
 
     for (const event of events){
         if (!eventIds.includes(event[0])){
@@ -240,8 +240,6 @@ async function updateDeathLogs(){
                 bulk.push({killer, killed, killer_class, killed_class, event_id:event[0], arena: true})
             }
 
-        }else if (eventIds.includes(event[0])){
-            console.log(event)
         }
     }
 
