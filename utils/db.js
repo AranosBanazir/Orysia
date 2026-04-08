@@ -220,9 +220,9 @@ async function updateDeathLogs(){
         return e.event_id
     })
     
+    
+
     for (const event of events){
-
-
         if (!eventIds.includes(event[0])){
             if (death.test(event[1])){
                 let killer = event[1].split(' ')[4].split('.')[0]
@@ -240,6 +240,8 @@ async function updateDeathLogs(){
                 bulk.push({killer, killed, killer_class, killed_class, event_id:event[0], arena: true})
             }
 
+        }else if (eventIds.includes(event[0])){
+            console.log(event)
         }
     }
 
