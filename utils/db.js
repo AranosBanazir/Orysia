@@ -66,7 +66,7 @@ async function playerKillStats(player, killerClass){
         const format = {}
 
 
-       kills.forEach(({ killer, killed, killer_class, killed_class }) => {
+       kills.forEach(({ killer, killed, killer_class, killed_class, arena }) => {
         if (!format[killer]) format[killer] = {};
 
         if (!format[killer][killer_class]) {
@@ -79,7 +79,8 @@ async function playerKillStats(player, killerClass){
             format[killer][killer_class][victimKey] = {
             killed,
             killed_class,
-            count: 0
+            count: 0,
+            arena
             };
         }
 
@@ -96,7 +97,7 @@ async function playerKillStats(player, killerClass){
   Object.entries(classes).forEach(([killerClass, victims]) => {
     Object.values(victims).forEach(v => {
       display = display + (
-        `   ${cap(v.killed)} (${cap(v.killed_class)}) x${v.count}`+'\n'
+        `   ${cap(v.killed)} (${cap(v.killed_class)}) x${v.count} ${v.arena ? " (Oniar)":''}`+'\n'
       );
     });
   });
