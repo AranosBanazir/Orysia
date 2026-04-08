@@ -1,6 +1,6 @@
 import {Client, GatewayIntentBits} from 'discord.js';
 import {createServer, port} from '../server.js';
-import { drawCard, getCommands, getGlobalClassStats, playerKillStats, getKDR, getPlayer, cap, getPlayers, getNews, pet, getPlayerKills, pullNewCard, getCards, kshaTargets} from '../utils/index.js';
+import {refreshActionPulls, refreshDraws, drawCard, getCommands, getGlobalClassStats, playerKillStats, getKDR, getPlayer, cap, getPlayers, getNews, pet, getPlayerKills, pullNewCard, getCards, kshaTargets} from '../utils/index.js';
 
 
 const bot = new Client({
@@ -34,7 +34,7 @@ bot.on('messageCreate', async (msg)=>{
     const whois = /\!whois \w+$/
     const news  = /^\!news (\w+) (\d+)$/
     const ldeck = /^!ldeck draw \w+\s?.+/
-    const cards = /^!cards$/
+  
     const responses = [
   "that is crazy",
   "hmm... have you had that independently verified?",
@@ -89,8 +89,7 @@ bot.on('messageCreate', async (msg)=>{
         }else if (content === '!commands'){
             const commands = getCommands()
             msg.channel.send('```\n' + commands + '```')
-        }else if (cards.test(content)){
-            //let huh = await pullNewCard('targ', msg.author.id)
+        }else if (content === '!cards' || content === '!deck'){
           let test = await getCards(msg.author.id)
             msg.channel.send('```ruby\n' + test + '```')
         }else if (ldeck.test(content)){
@@ -101,5 +100,16 @@ bot.on('messageCreate', async (msg)=>{
              
             
              await drawCard(who, msg, options, bot)
+        }else if (content === '!ldeck unwrap sleeve' || content === '!deck open sleeve' || content == '!unwrap sleeve' || content === '!open sleeve'){
+           let card = await pullNewCard(msg.author.id)
+            if (!card){
+                msg.channel.send('```' + 'You are currently out of pulls, please buy more premium currency.' + '```')
+            }else{
+                msg.channel.send(`<@${msg.author.id}> triumphantly drew ${cap(card)}`)
+            }
+        }else if (content === '!refresh draws' && msg.author.id == '582125240696569857'){
+            await refreshDraws()
+        }else if (content === '!refresh actions' && msg.author.id == '582125240696569857'){
+            await refreshActionPulls()
         }
 }})

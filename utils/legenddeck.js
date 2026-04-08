@@ -13,16 +13,19 @@ import {cap, buffer} from './index.js'
 
 
 //returns the card they pulled and updates the database
-async function pullNewCard(set, id){
+async function pullNewCard(id){
         let rnd = cards[Math.floor(Math.random() * cards.length)]
-        const drawCheck = await supabase.from('deck').select().eq('user_id', id)
+        const drawCheck = await supabase.from('deck').select().eq('user_id', id) || false
         rnd = rnd.toLowerCase()
-            
-        if (drawCheck?.data[0]?.remaining === 0){
-            return 'out of draws'
+        if (drawCheck?.data == null || drawCheck?.data[0]?.remaining == 0){
+            return false
         }
 
-        let remaining = drawCheck?.data[0].remaining - 1
+        let remaining = drawCheck?.data[0]?.remaining - 1
+
+        if (remaining < 0){
+            remaining = 0
+        }
         
         await supabase.from('deck').upsert({user_id: id, [rnd]:1})
 
@@ -34,9 +37,9 @@ async function pullNewCard(set, id){
 
 async function getCards(id){
     let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes').eq('user_id', id)
-    let cards = Object.entries(player.data[0])
+    let cards = Object.entries(player?.data[0] || [{}])
+    if (cards == 1) return await pullNewCard(id)
     
-
     let display = ''
     for (const card of cards){
         for (const des of cardDescriptions){
@@ -44,6 +47,9 @@ async function getCards(id){
                 display = display + cap(card[0]) + buffer(card[0], 10) + card[1] + ` ${des.desc}\n`
             }
         }
+    }
+    if (display?.length === 0){
+        display = 'You have to open a sleeve first!'
     }
     return display
 }
@@ -55,7 +61,8 @@ async function getCards(id){
   "I think you're on to something there, actually!",
   "wait...",
   "haha, good one",
-  "did you confirm with Alyzar?"
+  "did you confirm with Alyzar?",
+  "You've got a point!"
     ]
 
 
@@ -63,23 +70,35 @@ async function getCards(id){
 
 async function drawCard(card, msg, options, client){
     let userID = options?.split('<@')[1]?.split('>')[0] || ''
-    'claes'
-    if (card == 'Tesha'){
+    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes').eq('user_id', msg.author.id)
+    let cards = Object.entries(player?.data[0] || [{}])
+    let cardType = cap(card)
+    for (const c of cards){
+        if (cap(c[0]) == cardType){
+            if (c[1]== 0){
+                return
+            }
+        }
+    }
+
+    await supabase.from('deck').update({[card.toLowerCase()]: 0}).eq('user_id', msg.author.id)
+
+    if (cardType == 'Tesha'){
         console.log(await msg.channel.setRateLimitPerUser(2).then(()=>{
             setTimeout(()=>{
             msg.channel.setRateLimitPerUser(0)
         },60000)
         }))
         
-    }else if (card == 'Halos'){
+    }else if (cardType == 'Halos'){
         const channel = client.channels.cache.get(msg.reference.channelId)
         const message = await channel.messages.fetch(msg.reference.messageId)
         message.pin()
-    }else if (card == 'Anton'){
+    }else if (cardType == 'Anton'){
         const channel = client.channels.cache.get(msg.reference.channelId)
         const message = await channel.messages.fetch(msg.reference.messageId)
         message.delete().then(()=>msg.delete())
-    }else if (card == 'Watcher'){
+    }else if (cardType == 'Watcher'){
          const user = await msg.guild.members.cache.get(userID)
          try{
             let nick = options.split(' ')
@@ -96,7 +115,7 @@ async function drawCard(card, msg, options, client){
          }
         
         // console.log(msg)
-    }else if(card == 'Minkai'){
+    }else if(cardType == 'Minkai'){
             let nessage = options.split(' ')
                 nessage.shift()
             let fullMessage = nessage.join(' ')
@@ -106,16 +125,29 @@ async function drawCard(card, msg, options, client){
         })
     msg.delete()
         
-    }else if(card == 'Ksha'){
+    }else if(cardType == 'Ksha'){
         if (kshaTargets[userID] && kshaTargets[userID] != 0) return
         kshaTargets[userID] = 3
-        console.log(kshaTargets)
+        
+    }else if (cardType == 'Claes'){
+        
+        msg.channel.threads.create({
+    name: options,
+    autoArchiveDuration: 60,
+    reason: '',
+})  
     }
-
-    
-
 
 }
 
 
-export {pullNewCard, getCards, drawCard, kshaTargets}
+async function refreshDraws(){
+        await supabase.from('deck').update({remaining: 3}).eq('remaining', 0)
+}
+
+async function refreshActionPulls(){
+        await supabase.from('deck').update()
+}
+
+
+export {pullNewCard, getCards, drawCard, kshaTargets, refreshDraws, refreshActionPulls}
