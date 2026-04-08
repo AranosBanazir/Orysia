@@ -41,7 +41,7 @@ bot.on('messageCreate', async (msg)=>{
 
            let res = await playerKillStats(who, whoClass)
 
-           msg.channel.send('```' + res + '```')
+           msg.channel.send('```ruby\n' + res + '```')
         }else if (whois.test(content)){
             const who = content.split(' ')[1]
             const display = await getPlayer(who)

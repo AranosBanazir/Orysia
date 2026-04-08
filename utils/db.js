@@ -59,13 +59,12 @@ try{
 
 async function playerKillStats(player, killerClass){
     let result = await supabase.from('death_logs').select().eq('killer', cap(player)).eq('killer_class', killerClass.toLowerCase())
-
+    let kdr = await getKDR(player, killerClass)
     const kills = result.data
     let display = ``
 
         const format = {}
 
-        
 
        kills.forEach(({ killer, killed, killer_class, killed_class }) => {
         if (!format[killer]) format[killer] = {};
@@ -92,13 +91,12 @@ async function playerKillStats(player, killerClass){
 //formats based on the kills
 
   Object.entries(format).forEach(([killer, classes]) => {
-  display = display + `Recorded kills for ${cap(killer)} in: `;
+  display = display + `${cap(killer)} has a KDR of ${kdr.kdr} with ${kdr.k} kills to ${kdr.d} deaths in ${cap(killerClass)}.\n\n`;
 
   Object.entries(classes).forEach(([killerClass, victims]) => {
-        display = display + `${cap(killerClass)}\n`
     Object.values(victims).forEach(v => {
       display = display + (
-        `${cap(v.killed)} (${cap(v.killed_class)}) x${v.count}`+'\n'
+        `   ${cap(v.killed)} (${cap(v.killed_class)}) x${v.count}`+'\n'
       );
     });
   });
@@ -128,14 +126,20 @@ async function updatePlayerDB(){
 
 
 
-async function getKDR(who){
+async function getKDR(who, playerClass){
    // await updateDeathLogs()
-    const kills = await supabase.from('death_logs').select('*', {count: 'exact', head: true}).eq('killer', cap(who))
-    const deaths = await supabase.from('death_logs').select('*', {count: 'exact', head: true}).eq('killed', cap(who))
+   let kills
+   let deaths
+   if (playerClass){
+        kills = await supabase.from('death_logs').select('*',{count: 'exact'}).eq('killer', cap(who)).eq('killer_class', playerClass.toLowerCase())
+        deaths = await supabase.from('death_logs').select('*', {count: 'exact'}).eq('killed', cap(who)).eq('killed_class', playerClass.toLowerCase())
+   }else{
+        kills = await supabase.from('death_logs').select('*', {count: 'exact'}).eq('killer', cap(who))
+        deaths = await supabase.from('death_logs').select('*', {count: 'exact'}).eq('killed', cap(who))
+   }
 
     let num = kills.count / deaths.count
     let ratio = parseFloat(num.toFixed(1))
-
     if (deaths.count == 0){
         ratio = kills.count
     }
@@ -302,7 +306,7 @@ async function getPlayerKills(player){
 
    
 
-    if (kills.length === 0 ){
+    if (kills?.length === 0 ){
        return `No kills found for ${cap(player)}`
     }else{
        return display
