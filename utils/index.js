@@ -1,7 +1,7 @@
-import { cap, getCommands } from "./formating.js";
+import { cap, getCommands, buffer } from "./formating.js";
 import { playerKillStats, getKDR, getPlayers, getPlayerKills, getGlobalClassStats} from "./db.js";
 import { getOnline, fetchIRE, getClass, getGameFeed, getPlayer, getNews, pet} from "./IRE.js";
-
+import { refreshDraws, pullNewCard, getCards, drawCard, kshaTargets, refreshActionPulls} from "./legenddeck.js";
 
 
 
@@ -19,5 +19,12 @@ export {
     pet,
     getPlayerKills,
     getGlobalClassStats,
-    getCommands
+    getCommands,
+    pullNewCard,
+    getCards,
+    buffer,
+    drawCard,
+    kshaTargets,
+    refreshDraws,
+    refreshActionPulls,
 }
