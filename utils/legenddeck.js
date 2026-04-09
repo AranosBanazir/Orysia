@@ -26,10 +26,14 @@ async function pullNewCard(id){
         if (remaining < 0){
             remaining = 0
         }
+
+        let charges = drawCheck?.data[0][rnd]
+
+        let newCharge = charges + 1
         
         await supabase.from('deck').upsert({user_id: id, [rnd]:1})
 
-        await supabase.from('deck').update({[rnd]:1, remaining: remaining}).eq('user_id', id)
+        await supabase.from('deck').update({[rnd]:newCharge, remaining: remaining}).eq('user_id', id)
 
     return rnd
 }
@@ -142,12 +146,17 @@ async function drawCard(card, msg, options, client){
 
 
 async function refreshDraws(){
-        await supabase.from('deck').update({remaining: 3}).eq('remaining', 0)
+        await supabase.from('deck').update({remaining: 3}).neq('id', 0)
+        console.log('UPDATING DRAWS -- FOR ALL PLAYERS')
 }
 
 async function refreshActionPulls(){
         await supabase.from('deck').update()
 }
 
+
+setInterval(async () => {
+    await refreshDraws()
+}, 3600000);
 
 export {pullNewCard, getCards, drawCard, kshaTargets, refreshDraws, refreshActionPulls}
