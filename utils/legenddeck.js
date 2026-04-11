@@ -83,16 +83,17 @@ async function drawCard(card, msg, options, client){
             remainingCharges[c[0]] = c[1]
         }
         if (cap(c[0]) == cardType){
-            remainingCharges[cardType] = remainingCharges[cardType] - 1
+            remainingCharges[c[0]] = remainingCharges[c[0]] - 1
+            console.log(remainingCharges[c[0]])
             if (c[1]== 0){
                 return
             }
         }
     }
 
-        
+            
 
-    await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType] }).eq('user_id', msg.author.id)
+    await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType.toLowerCase()] }).eq('user_id', msg.author.id)
 
     if (cardType == 'Tesha'){
         console.log(await msg.channel.setRateLimitPerUser(2).then(()=>{
