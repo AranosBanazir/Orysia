@@ -25,7 +25,7 @@ async function updatePlayerInfo(who, kdr){
                                 .eq('name', who)
                                 .select()
                               
-            if (data.length === 0 ){
+            if (data?.length === 0 ){
                 await supabase.from('Players')
                               .insert(player)
                               
