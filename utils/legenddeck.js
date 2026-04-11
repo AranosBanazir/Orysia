@@ -77,15 +77,22 @@ async function drawCard(card, msg, options, client){
     let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes').eq('user_id', msg.author.id)
     let cards = Object.entries(player?.data[0] || [{}])
     let cardType = cap(card)
+    let remainingCharges = {}
     for (const c of cards){
+        if (!remainingCharges[c[0]]){
+            remainingCharges[c[0]] = c[1]
+        }
         if (cap(c[0]) == cardType){
+            remainingCharges[cardType] = remainingCharges[cardType] - 1
             if (c[1]== 0){
                 return
             }
         }
     }
 
-    await supabase.from('deck').update({[card.toLowerCase()]: 0}).eq('user_id', msg.author.id)
+        
+
+    await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType] }).eq('user_id', msg.author.id)
 
     if (cardType == 'Tesha'){
         console.log(await msg.channel.setRateLimitPerUser(2).then(()=>{
