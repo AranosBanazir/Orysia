@@ -40,8 +40,8 @@ const createServer = (client) => {
     return app;
 };
 
+const gifAPI = process.env.gifAPI
 
 
 
-
-export {createServer, port, supabase, Grim}
+export {createServer, port, supabase, Grim, gifAPI}

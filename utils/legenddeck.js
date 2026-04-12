@@ -1,8 +1,7 @@
 import {cards, cardDescriptions} from "../deck/cards.js"
-import { supabase } from "../server.js"
+import { supabase, gifAPI } from "../server.js"
 import {cap, buffer} from './index.js'
-
-
+import { GiphyFetch } from "@giphy/js-fetch-api"
 
 
 
@@ -84,8 +83,8 @@ async function drawCard(card, msg, options, client){
         }
         if (cap(c[0]) == cardType){
             remainingCharges[c[0]] = remainingCharges[c[0]] - 1
-            console.log(remainingCharges[c[0]])
             if (c[1]== 0){
+                msg.channel.send(`You have no more ${cardType} cards remaining, spend more money.`)
                 return
             }
         }
@@ -149,9 +148,29 @@ async function drawCard(card, msg, options, client){
     autoArchiveDuration: 60,
     reason: '',
 })  
+    }else if (cardType == 'Imyrr'){
+        const gf = new GiphyFetch(gifAPI)
+        const {data: gifs} = await gf.random()
+        msg.channel.send(gifs.images.original.url)
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 async function refreshDraws(){
@@ -162,7 +181,6 @@ async function refreshDraws(){
 async function refreshActionPulls(){
         await supabase.from('deck').update()
 }
-
 
 setInterval(async () => {
     await refreshDraws()
