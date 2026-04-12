@@ -192,7 +192,7 @@ async function drawCard(card, msg, options, client){
          setTimeout(async ()=>{
             await user.roles.remove(roleID)
             
-         },600000)
+         },1800000)
          msg.channel.send('Know your place Execrant.')
     }
 }
