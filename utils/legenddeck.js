@@ -39,7 +39,7 @@ async function pullNewCard(id){
 
 
 async function getCards(id){
-    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes').eq('user_id', id)
+    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal').eq('user_id', id)
     let cards = Object.entries(player?.data[0] || [{}])
     if (cards == 1){
         await pullNewCard(id)
