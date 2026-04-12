@@ -41,7 +41,11 @@ async function pullNewCard(id){
 async function getCards(id){
     let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes').eq('user_id', id)
     let cards = Object.entries(player?.data[0] || [{}])
-    if (cards == 1) return await pullNewCard(id)
+    if (cards == 1){
+        await pullNewCard(id)
+        return
+    } 
+        
     
     let display = ''
     for (const card of cards){
@@ -73,10 +77,18 @@ async function getCards(id){
 
 async function drawCard(card, msg, options, client){
     let userID = options?.split('<@')[1]?.split('>')[0] || ''
-    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes').eq('user_id', msg.author.id)
+    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal').eq('user_id', msg.author.id)
     let cards = Object.entries(player?.data[0] || [{}])
     let cardType = cap(card)
     let remainingCharges = {}
+    const roleID = '1492952394315857930'
+
+    if (msg.member.roles.cache.has(roleID)){
+        msg.channel.send('Know your place Execrant')
+        return
+    }
+    
+
     for (const c of cards){
         if (!remainingCharges[c[0]]){
             remainingCharges[c[0]] = c[1]
@@ -90,7 +102,14 @@ async function drawCard(card, msg, options, client){
         }
     }
 
-            
+                const abyResponse = [ 'a','b','c','d','e','f','g','h','i','j','k','l','m',
+  'n','o','p','q','r','s','t','u','v','w','x','y','z',
+  'A','B','C','D','E','F','G','H','I','J','K','L','M',
+  'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+  '!','@','#','$','%','^','&','*','(',')',
+    '[',']','{','}',';',':',
+  "'",'"',',','.']
+     const randomNum = Math.floor(Math.random() * (15 - 10 + 1)) + 10;    
 
     await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType.toLowerCase()] }).eq('user_id', msg.author.id)
 
@@ -152,8 +171,30 @@ async function drawCard(card, msg, options, client){
         const gf = new GiphyFetch(gifAPI)
         const {data: gifs} = await gf.random()
         msg.channel.send(gifs.images.original.url)
-    }
+    }else if (cardType == 'Abysal'){
+        let i = 0
+        let display = ''
+        while (i < randomNum){
+            const randomChar = abyResponse[Math.floor(Math.random() * abyResponse.length)]
 
+            display = display + randomChar
+            i++
+        }
+        let sentMsg = msg
+        msg.channel.send(display)
+        sentMsg.delete()
+    }else if (cardType == 'Karalden'){
+         
+        
+         const {id: pingedID} = await msg.mentions.users.first()
+         const user = await msg.guild.members.cache.get(pingedID)
+         await user.roles.add(roleID)
+         setTimeout(async ()=>{
+            await user.roles.remove(roleID)
+            
+         },600000)
+         msg.channel.send('Know your place Execrant.')
+    }
 }
 
 
