@@ -22,8 +22,8 @@ const cardDescriptions = [
   { name: "Tesha", desc: "will enable slowmode for 1 minute in the channel you draw it in. !ldeck draw tesha" },
   { name: "Minkai", desc: "will send a whisper from the bot anonomously to whoever you draw it for !ldeck draw minkia @<who>" },
   { name: "Imyrr", desc: "will reply to a message with a random gif, how chaotic." },
-  { name: "Karalden", desc: "Will add the 'Execrant' role to a player for 30 minutes, disabling all cards"},
-  {name: "Abysal", desc:"Will reply to a message with a random string of characters"}
+  { name: "Karalden", desc: "will add the 'Execrant' role to a player for 30 minutes, disabling all cards !ldeck draw karalden @<person>"},
+  {name: "Abysal", desc:"will reply to a message with a random string of characters !ldeck draw abysal"}
 ];
 
 const cards = [
