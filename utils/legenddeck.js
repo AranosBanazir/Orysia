@@ -131,6 +131,7 @@ async function drawCard(card, msg, options, client){
             let nessage = options.split(' ')
                 nessage.shift()
             let fullMessage = nessage.join(' ')
+            if (fullMessage == '') return
         const user = await client.users.cache.get(userID)
         user.send(fullMessage).then(sentMsg=>{
             
