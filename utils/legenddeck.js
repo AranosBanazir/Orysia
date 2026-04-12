@@ -109,6 +109,7 @@ async function drawCard(card, msg, options, client){
   '!','@','#','$','%','^','&','*','(',')',
     '[',']','{','}',';',':',
   "'",'"',',','.']
+  
      const randomNum = Math.floor(Math.random() * (15 - 10 + 1)) + 10;    
 
     await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType.toLowerCase()] }).eq('user_id', msg.author.id)

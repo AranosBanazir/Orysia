@@ -73,7 +73,7 @@ bot.on('messageCreate', async (msg)=>{
             msg.channel.send(`Updating player database...${emoji}`).then(async sentMsg=>{
                     const msgID = sentMsg.id
                     const data = await getPlayers()
-                    msg.channel.send('```' + data + '```').then(()=>{
+                    msg.channel.send('```ruby\n' + data + '```').then(()=>{
                         sentMsg.delete()
                     })
 
