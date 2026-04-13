@@ -86,6 +86,7 @@ async function drawCard(card, msg, options, client){
     let cards = Object.entries(player?.data[0] || [{}])
     let cardType = cap(card)
     let remainingCharges = {}
+    let araCharge = false
     const roleID = '1492952394315857930'
 
     if (msg.member.roles.cache.has(roleID)){
@@ -103,6 +104,7 @@ async function drawCard(card, msg, options, client){
 
       for (const c of cards){
         if (cardType == 'Aranos' && remainingCharges['aranos'] > 0){
+            araCharge = true
             if (c[0] == 'aranos'){
                remainingCharges[c[0]] -= 1 
             }else{
@@ -126,8 +128,11 @@ async function drawCard(card, msg, options, client){
   "'",'"',',','.']
   
      const randomNum = Math.floor(Math.random() * (15 - 10 + 1)) + 10;    
-        
-    await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType.toLowerCase()] }).eq('user_id', msg.author.id)
+    if (araCharge == true){
+        await supabase.from('deck').update(remainingCharges).eq('user_id', msg.author.id)
+    }else{
+        await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType.toLowerCase()] }).eq('user_id', msg.author.id)
+    }
 
     if (cardType == 'Tesha'){
         console.log(await msg.channel.setRateLimitPerUser(2).then(()=>{
