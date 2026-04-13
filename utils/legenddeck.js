@@ -14,7 +14,7 @@ import { GiphyFetch } from "@giphy/js-fetch-api"
 //returns the card they pulled and updates the database
 async function pullNewCard(id){
         let rnd = cards[Math.floor(Math.random() * cards.length)]
-        const araCheck = Math.floor(Math.random() * 100) + 1;
+        const araCheck = Math.floor(Math.random() * 200) + 1;
         const drawCheck = await supabase.from('deck').select().eq('user_id', id) || false
         rnd = rnd.toLowerCase()
         if (drawCheck?.data == null || drawCheck?.data[0]?.remaining == 0){
