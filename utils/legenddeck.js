@@ -24,9 +24,9 @@ async function pullNewCard(id){
         if (araCheck == 100 || araCheck == 69){
             rnd = 'aranos'
         }
-
+        console.log(id, 'rolled a: ', araCheck)
         let remaining = drawCheck?.data[0]?.remaining - 1
-
+ 
         if (remaining < 0){
             remaining = 0
         }
