@@ -1,6 +1,6 @@
 import {Client, GatewayIntentBits} from 'discord.js';
 import {createServer, port} from '../server.js';
-import {refreshActionPulls, refreshDraws, drawCard, getCommands, getGlobalClassStats, playerKillStats, getKDR, getPlayer, cap, getPlayers, getNews, pet, getPlayerKills, pullNewCard, getCards, kshaTargets} from '../utils/index.js';
+import {refreshActionPulls, refreshDraws, drawCard, getCommands, getGlobalClassStats, playerKillStats, getKDR, getPlayer, cap, getPlayers, getNews, pet, getPlayerKills, pullNewCard, getCards, kshaTargets, cardHelp} from '../utils/index.js';
 
 
 const bot = new Client({
@@ -111,5 +111,8 @@ bot.on('messageCreate', async (msg)=>{
             await refreshDraws()
         }else if (content === '!refresh actions' && msg.author.id == '582125240696569857'){
             await refreshActionPulls()
+        }else if (content === '!deck help' || content === '!ldeck help'){
+            let display = '```' + await cardHelp() + '```'
+            msg.channel.send(display)
         }
 }})

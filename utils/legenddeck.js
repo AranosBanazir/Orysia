@@ -14,10 +14,15 @@ import { GiphyFetch } from "@giphy/js-fetch-api"
 //returns the card they pulled and updates the database
 async function pullNewCard(id){
         let rnd = cards[Math.floor(Math.random() * cards.length)]
+        const araCheck = Math.floor(Math.random() * 100) + 1;
         const drawCheck = await supabase.from('deck').select().eq('user_id', id) || false
         rnd = rnd.toLowerCase()
         if (drawCheck?.data == null || drawCheck?.data[0]?.remaining == 0){
             return false
+        }
+
+        if (araCheck == 100 || araCheck == 69){
+            rnd = 'aranos'
         }
 
         let remaining = drawCheck?.data[0]?.remaining - 1
@@ -39,7 +44,7 @@ async function pullNewCard(id){
 
 
 async function getCards(id){
-    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal').eq('user_id', id)
+    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal, aranos').eq('user_id', id)
     let cards = Object.entries(player?.data[0] || [{}])
     if (cards == 1){
         await pullNewCard(id)
@@ -77,7 +82,7 @@ async function getCards(id){
 
 async function drawCard(card, msg, options, client){
     let userID = options?.split('<@')[1]?.split('>')[0] || ''
-    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal').eq('user_id', msg.author.id)
+    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal, aranos').eq('user_id', msg.author.id)
     let cards = Object.entries(player?.data[0] || [{}])
     let cardType = cap(card)
     let remainingCharges = {}
@@ -90,15 +95,25 @@ async function drawCard(card, msg, options, client){
     
 
     for (const c of cards){
+        //filling the charge table
         if (!remainingCharges[c[0]]){
             remainingCharges[c[0]] = c[1]
         }
-        if (cap(c[0]) == cardType){
-            remainingCharges[c[0]] = remainingCharges[c[0]] - 1
+    }
+
+      for (const c of cards){
+        if (cardType == 'Aranos' && remainingCharges['aranos'] > 0){
+            if (c[0] == 'aranos'){
+               remainingCharges[c[0]] -= 1 
+            }else{
+                remainingCharges[c[0]] += 1
+            }
+        }else if (cap(c[0]) == cardType){
             if (c[1]== 0){
                 msg.channel.send(`You have no more ${cardType} cards remaining, spend more money.`)
                 return
             }
+            remainingCharges[c[0]] -= 1
         }
     }
 
@@ -111,7 +126,7 @@ async function drawCard(card, msg, options, client){
   "'",'"',',','.']
   
      const randomNum = Math.floor(Math.random() * (15 - 10 + 1)) + 10;    
-
+        
     await supabase.from('deck').update({[card.toLowerCase()]: remainingCharges[cardType.toLowerCase()] }).eq('user_id', msg.author.id)
 
     if (cardType == 'Tesha'){
@@ -195,6 +210,8 @@ async function drawCard(card, msg, options, client){
             
          },1800000)
          msg.channel.send('Know your place Execrant.')
+    }else if (cardType == 'Aranos'){
+        msg.channel.send('```\nYou have been granted 1 charge in every card, use them wisely.```')
     }
 }
 
@@ -202,7 +219,12 @@ async function drawCard(card, msg, options, client){
 
 
 
-
+async function cardHelp(){
+    return `\n!ldeck unwrap sleeve -- Opens a new sleeve if you have any remaining.
+!ldeck open sleeve -- Does the same as above.
+!deck -- Displays the cards you have.
+!cards -- Same as above.`
+}
 
 
 
@@ -228,4 +250,4 @@ setInterval(async () => {
     await refreshDraws()
 }, 3600000);
 
-export {pullNewCard, getCards, drawCard, kshaTargets, refreshDraws, refreshActionPulls}
+export {pullNewCard, getCards, drawCard, kshaTargets, refreshDraws, refreshActionPulls, cardHelp}

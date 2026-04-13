@@ -1,4 +1,4 @@
-const targossas = ["Ksha", "Halos", "Watcher", "Karalden", "Abysal"];
+const targossas = ["Ksha", "Halos", "Watcher", "Karalden", "Abysal", "Aranos"];
 const mhaldor = ["Anton"];
 const cyrene = ["Claes"];
 const eleusis = ["Tesha"];
@@ -23,7 +23,8 @@ const cardDescriptions = [
   { name: "Minkai", desc: "will send a whisper from the bot anonomously to whoever you draw it for !ldeck draw minkai @<who> <msg>" },
   { name: "Imyrr", desc: "will reply to a message with a random gif, how chaotic." },
   { name: "Karalden", desc: "will add the 'Execrant' role to a player for 30 minutes, disabling all cards !ldeck draw karalden @<person>"},
-  {name: "Abysal", desc:"will reply to a message with a random string of characters !ldeck draw abysal"}
+  {name: "Abysal", desc:"will reply to a message with a random string of characters !ldeck draw abysal"},
+  {name: "Aranos", desc: "This ever elusive card when drawn will give you one charge of every card. There is a 2% chance of drawing this card."}
 ];
 
 const cards = [
