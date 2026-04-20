@@ -1,4 +1,4 @@
-const targossas = ["Ksha", "Halos", "Watcher", "Karalden", "Abysal", "Aranos"];
+const targossas = ["Ksha", "Halos", "Watcher", "Karalden", "Abysal"];
 const mhaldor = ["Anton"];
 const cyrene = ["Claes"];
 const eleusis = ["Tesha"];

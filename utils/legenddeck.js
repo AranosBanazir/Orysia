@@ -15,15 +15,18 @@ import { GiphyFetch } from "@giphy/js-fetch-api"
 async function pullNewCard(id){
         let rnd = cards[Math.floor(Math.random() * cards.length)]
         const araCheck = Math.floor(Math.random() * 200) + 1;
+        const doubleCheck = Math.floor(Math.random() * 2) + 1
         const drawCheck = await supabase.from('deck').select().eq('user_id', id) || false
         rnd = rnd.toLowerCase()
         if (drawCheck?.data == null || drawCheck?.data[0]?.remaining == 0){
             return false
         }
 
-        if (araCheck == 100 || araCheck == 69){
+    if (doubleCheck == 1){
+        if (araCheck == 69){
             rnd = 'aranos'
         }
+    }
         console.log(id, 'rolled a: ', araCheck)
         let remaining = drawCheck?.data[0]?.remaining - 1
  
