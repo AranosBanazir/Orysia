@@ -25,6 +25,7 @@ bot.once('clientReady', () => {
 
 bot.login(process.env.BOT_TOKEN);
 
+const targServer = '1441275593428570154'
 
 
 bot.on('messageCreate', async (msg)=>{
@@ -34,7 +35,7 @@ bot.on('messageCreate', async (msg)=>{
     const whois = /\!whois \w+$/
     const news  = /^\!news (\w+) (\d+)$/
     const ldeck = /^!ldeck draw \w+\s?.+/
-  
+    const guild = msg.guildId
     const responses = [
   "that is crazy",
   "hmm... have you had that independently verified?",
@@ -90,9 +91,11 @@ bot.on('messageCreate', async (msg)=>{
             const commands = getCommands()
             msg.channel.send('```\n' + commands + '```')
         }else if (content === '!cards' || content === '!deck'){
+            if (guild != targServer) return
           let test = await getCards(msg.author.id)
             msg.channel.send('```ruby\n' + test + '```')
         }else if (ldeck.test(content)){
+            if (guild != targServer) return
             let who = content.split(' ')[2]
             let options = []
              
@@ -101,17 +104,21 @@ bot.on('messageCreate', async (msg)=>{
             
              await drawCard(who, msg, options, bot)
         }else if (content === '!ldeck unwrap sleeve' || content === '!deck open sleeve' || content == '!unwrap sleeve' || content === '!open sleeve'){
-           let card = await pullNewCard(msg.author.id)
+           if (guild != targServer) return
+            let card = await pullNewCard(msg.author.id)
             if (!card){
                 msg.channel.send('```' + 'You are currently out of pulls, please buy more premium currency.' + '```')
             }else{
                 msg.channel.send(`<@${msg.author.id}> triumphantly drew ${cap(card)}`)
             }
         }else if (content === '!refresh draws' && msg.author.id == '582125240696569857'){
+            if (guild != targServer) return
             await refreshDraws()
         }else if (content === '!refresh actions' && msg.author.id == '582125240696569857'){
+            if (guild != targServer) return
             await refreshActionPulls()
         }else if (content === '!deck help' || content === '!ldeck help'){
+            if (guild != targServer) return
             let display = '```' + await cardHelp() + '```'
             msg.channel.send(display)
         }
