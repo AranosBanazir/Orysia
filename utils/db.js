@@ -1,16 +1,9 @@
 import { supabase } from "../server.js";
 import { fetchIRE, getClass, getOnline, cap, getGameFeed} from "./index.js";
 import { Grim } from "../server.js";
-//Did today
-    //Added db fetch requests and formatting for kills by class
-    //set up the structure of the DB
-
-//TODO
-    //set up KDR to show seperate from requesting a class
 
 
-
-//TODO this does not work, will need to update first and if the return is not a player, insert
+const resetDate = '04/21/2026'
 async function updatePlayerInfo(who, kdr){
         let player = await fetchIRE(`characters/${who}.json`)
          
@@ -110,7 +103,7 @@ async function playerKillStats(player, killerClass){
     }else if (kills.length === 0 && killerClass != undefined){
         return `No kills found for ${cap(player)} in ${cap(killerClass)}`
     }else{
-        return display
+        return display + `\nDB last reset: ${resetDate}`
     }
 }
 
@@ -309,7 +302,7 @@ async function getPlayerKills(player){
     if (kills?.length === 0 ){
        return `No kills found for ${cap(player)}`
     }else{
-       return display
+       return display + `\nlast reset: ${resetDate}`
     }
 }
 
