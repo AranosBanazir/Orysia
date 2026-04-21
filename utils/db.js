@@ -46,7 +46,7 @@ try{
     const killer_class = await getClass(killer)
     const killed_class = await getClass(killed)
     
-    const {error} = await supabase.from('death_logs').insert({killer, killed, killer_class, killed_class})
+    const {error} = await supabase.from('new_death_logs').insert({killer, killed, killer_class, killed_class})
     
         if (!error){
             console.log('successfully inserted new death log')
@@ -58,7 +58,7 @@ try{
 
 
 async function playerKillStats(player, killerClass){
-    let result = await supabase.from('death_logs').select().eq('killer', cap(player)).eq('killer_class', killerClass.toLowerCase())
+    let result = await supabase.from('new_death_logs').select().eq('killer', cap(player)).eq('killer_class', killerClass.toLowerCase())
     let kdr = await getKDR(player, killerClass)
     const kills = result.data
     let display = ``
@@ -132,11 +132,11 @@ async function getKDR(who, playerClass){
    let kills
    let deaths
    if (playerClass){
-        kills = await supabase.from('death_logs').select('*',{count: 'exact'}).eq('killer', cap(who)).eq('killer_class', playerClass.toLowerCase())
-        deaths = await supabase.from('death_logs').select('*', {count: 'exact'}).eq('killed', cap(who)).eq('killed_class', playerClass.toLowerCase())
+        kills = await supabase.from('new_death_logs').select('*',{count: 'exact'}).eq('killer', cap(who)).eq('killer_class', playerClass.toLowerCase())
+        deaths = await supabase.from('new_death_logs').select('*', {count: 'exact'}).eq('killed', cap(who)).eq('killed_class', playerClass.toLowerCase())
    }else{
-        kills = await supabase.from('death_logs').select('*', {count: 'exact'}).eq('killer', cap(who))
-        deaths = await supabase.from('death_logs').select('*', {count: 'exact'}).eq('killed', cap(who))
+        kills = await supabase.from('new_death_logs').select('*', {count: 'exact'}).eq('killer', cap(who))
+        deaths = await supabase.from('new_death_logs').select('*', {count: 'exact'}).eq('killed', cap(who))
    }
 
     let num = kills.count / deaths.count
@@ -219,7 +219,7 @@ async function updateDeathLogs(){
         }
     })
     let bulk = []
-    const ids = await supabase.from('death_logs').select('id, event_id').order('id', {ascending: false}).limit(25)
+    const ids = await supabase.from('new_death_logs').select('id, event_id').order('id', {ascending: false}).limit(25)
 
 
 
@@ -248,7 +248,7 @@ async function updateDeathLogs(){
         }
     }
 
-    const {data, error} = await supabase.from('death_logs').insert(bulk).select()
+    const {data, error} = await supabase.from('new_death_logs').insert(bulk).select()
 
     if (data?.length > 0){
         console.log(data)
@@ -258,7 +258,7 @@ async function updateDeathLogs(){
 
 
 async function getPlayerKills(player){
-    let result = await supabase.from('death_logs').select().eq('killer', cap(player))
+    let result = await supabase.from('new_death_logs').select().eq('killer', cap(player))
     let kdr = await getKDR(player)
     const kills = result.data
     let display = ``
@@ -316,7 +316,7 @@ async function getPlayerKills(player){
 
 
 async function getGlobalClassStats(){
-    const {data} = await supabase.from('death_logs').select()
+    const {data} = await supabase.from('new_death_logs').select()
     const classes = ["alchemist", "apostate", "bard", "blademaster", "depthswalker", "druid", "infernal", "jester", 'magi', "monk", "occultist", "paladin", "pariah", "priest", "psion", "runewarden", "sentinel", "serpent", "shaman", "sylvan", "unnamable"]
     let classInfo = {}
     let display = ``

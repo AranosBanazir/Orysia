@@ -85,7 +85,7 @@ async function getCards(id){
 
 async function drawCard(card, msg, options, client){
     let userID = options?.split('<@')[1]?.split('>')[0] || ''
-    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal, aranos').eq('user_id', msg.author.id)
+    let player = await supabase.from('deck').select('tesha, watcher, ksha, halos, minkai, anton, imyrr, claes, karalden, abysal, aranos, aeowynn').eq('user_id', msg.author.id)
     let cards = Object.entries(player?.data[0] || [{}])
     let cardType = cap(card)
     let remainingCharges = {}
@@ -220,6 +220,11 @@ async function drawCard(card, msg, options, client){
          msg.channel.send('Know your place Execrant.')
     }else if (cardType == 'Aranos'){
         msg.channel.send('```\nYou have been granted 1 charge in every card, use them wisely.```')
+    }else if (cardType == 'Aeowynn'){
+        const gf = new GiphyFetch(gifAPI)
+        const { data: gifs } = await gf.search('cat cake food', {limit: 5, type: 'gifs'})
+        //msg.channel.send()
+        console.log(gifs)
     }
 }
 
