@@ -226,7 +226,7 @@ async function updateDeathLogs(){
     let eventIds = ids?.data?.map(e=>{
         return e.event_id
     }) || []
-
+ 
     for (const event of events){
         if (!eventIds.includes(event[0])){
             if (death.test(event[1])){
@@ -247,9 +247,8 @@ async function updateDeathLogs(){
 
         }
     }
-
     const {data, error} = await supabase.from('new_death_logs').insert(bulk).select()
-
+    console.log('Supabase error:', error)
     if (data?.length > 0){
         console.log(data)
     }
