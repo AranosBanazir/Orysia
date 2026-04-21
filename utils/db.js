@@ -223,9 +223,9 @@ async function updateDeathLogs(){
 
 
 
-    let eventIds = ids.data.map(e=>{
+    let eventIds = ids?.data?.map(e=>{
         return e.event_id
-    })
+    }) || []
 
     for (const event of events){
         if (!eventIds.includes(event[0])){
