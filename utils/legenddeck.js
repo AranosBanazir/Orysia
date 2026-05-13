@@ -16,14 +16,15 @@ async function pullNewCard(id){
         let rnd = cards[Math.floor(Math.random() * cards.length)]
         const araCheck = Math.floor(Math.random() * 200) + 1;
         const doubleCheck = Math.floor(Math.random() * 2) + 1
-        const drawCheck = await supabase.from('deck').select().eq('user_id', id) || false
+        const drawCheck = (await supabase.from('deck').select().eq('user_id', id) || false)
         rnd = rnd.toLowerCase()
+        console.log(drawCheck)
         if (drawCheck?.data == null || drawCheck?.data[0]?.remaining == 0){
             return false
         }
 
     if (doubleCheck == 1){
-        if (araCheck == 69){
+        if (araCheck == 69 || araCheck == 100 || araCheck == 1){
             rnd = 'aranos'
         }
     }
