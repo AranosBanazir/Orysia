@@ -3,7 +3,7 @@ import { fetchIRE, getClass, getOnline, cap, getGameFeed} from "./index.js";
 import { Grim } from "../server.js";
 
 
-const resetDate = '04/21/2026'
+const resetDate = '06/14/2026'
 async function updatePlayerInfo(who, kdr){
         let player = await fetchIRE(`characters/${who}.json`)
          
