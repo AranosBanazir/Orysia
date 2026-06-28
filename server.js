@@ -34,6 +34,11 @@ const createServer = (client) => {
 
     }); 
 
+    app.get('/db', async (req, res)=>{
+        console.log('REQ', req)
+        console.log('RES', res)
+    })
+
     // Add other routes here that need access to the client
     // ...
 
