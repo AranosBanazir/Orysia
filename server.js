@@ -44,13 +44,13 @@ const createServer = (client) => {
     //     }
     // })
 
-    // app.get('/db/updateBoons', async (req, res)=>{
-    //     //let {error, data} = await supabase.from('boons').select()
+    app.get('/db/updateBoons', async (req, res)=>{
+        //let {error, data} = await supabase.from('boons').select()
 
-      
-    //         res.send(JSON.stringify(req.body))
+            console.log(req.body)
+            res.send(JSON.stringify(req.body))
         
-    // })
+    })
 
     // Add other routes here that need access to the client
     // ...
