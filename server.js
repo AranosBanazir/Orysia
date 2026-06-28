@@ -47,7 +47,7 @@ const createServer = (client) => {
     app.get('/db/updateBoons', async (req, res)=>{
         //let {error, data} = await supabase.from('boons').select()
 
-            console.log(req.body)
+            console.log(req)
             res.send(JSON.stringify(req.body))
         
     })
